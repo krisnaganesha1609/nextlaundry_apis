@@ -24,7 +24,7 @@ func PackageTriggers() {
 	DB.Exec("CREATE OR REPLACE TRIGGER `trigger_paket_delete_history` AFTER DELETE ON `tb_paket` FOR EACH ROW INSERT INTO log_history VALUES(NULL, CONCAT('Package with id ', OLD.id, ' (', OLD.Nama_paket, ')', ' has been removed'), 'paket', NOW(), NULL);")
 }
 
-// func TransactionTriggers() {
-// 	DB.Exec("CREATE OR REPLACE TRIGGER `update` AFTER INSERT ON `tb_transaksi` FOR EACH ROW CALL InsertFirstTransactionLog();")
-// 	DB.Exec("CREATE OR REPLACE TRIGGER `trigger_detailtransaction_insert_history` AFTER INSERT ON `tb_detail_transaksi` FOR EACH ROW CALL UpdateTheTransactionLog();")
-// }
+func TransactionTriggers() {
+	DB.Exec("CREATE OR REPLACE TRIGGER `trigger_transaksi_insert_history` AFTER INSERT ON `tb_transaksi` FOR EACH ROW INSERT INTO log_history VALUES(NULL, CONCAT('New invoice: ', NEW.kode_invoice), 'transaksi', NOW(), NULL);")
+	DB.Exec("CREATE OR REPLACE TRIGGER `trigger_detailtransaksi_insert_history` AFTER INSERT ON `tb_detail_transaksi` FOR EACH ROW INSERT INTO log_history VALUES(NULL, CONCAT('New details: ', NEW.id), 'detail_transaksi', NOW(), NULL);")
+}

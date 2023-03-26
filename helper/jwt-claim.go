@@ -3,6 +3,7 @@ package helper
 import (
 	"container/heap"
 	"errors"
+	"log"
 	"net/http"
 	"strings"
 	"time"
@@ -83,6 +84,7 @@ func ValidateToken(c *gin.Context) (tokenString string, claim *JWTClaim, err err
 		return JwtKey, nil
 	})
 	if err != nil {
+		log.Println(err.Error())
 		return
 	}
 
@@ -103,7 +105,7 @@ func ExtractToken(c *gin.Context) string {
 	if token != "" {
 		return token
 	}
-	bearerToken := c.Request.Header.Get("Authorization")
+	bearerToken := c.GetHeader("Authorization")
 	if len(strings.Split(bearerToken, " ")) == 2 {
 		return strings.Split(bearerToken, " ")[1]
 	}

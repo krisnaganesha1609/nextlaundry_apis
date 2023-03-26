@@ -2,7 +2,6 @@ package authController
 
 import (
 	"errors"
-	"fmt"
 	h "nextlaundry_apis/helper"
 	m "nextlaundry_apis/models"
 	s "nextlaundry_apis/models/setup"
@@ -13,7 +12,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func CurrentUser(c *gin.Context) {
+func SecondValidate(c *gin.Context) {
 	token, id, err := h.ValidateToken(c)
 
 	if token == "" || err != nil {
@@ -30,7 +29,7 @@ func CurrentUser(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"message": "success", "data": uid})
+	c.JSON(http.StatusOK, gin.H{"message": "token valid", "data": uid})
 
 }
 
@@ -81,25 +80,24 @@ func AuthHandler(c *gin.Context) {
 
 	user.PrepareGive()
 
-	c.JSON(http.StatusOK, gin.H{"token": tokenString, "user": user, "message": "Login Successful"})
+	c.JSON(http.StatusOK, gin.H{"token": tokenString, "user": user, "message": "Logged In Successfully"})
 }
 
 func LogoutHandler(c *gin.Context) {
-	UID := c.MustGet("UID")
 	tokenString := h.ExtractToken(c)
 
 	expirationTime := time.Now().Add(24 * time.Hour)
 	h.TokenHeap.Push(h.BlacklistedToken{Token: tokenString, ExpirationTime: expirationTime})
 	h.BlacklistedTokens[tokenString] = &expirationTime
 
-	c.JSON(http.StatusOK, gin.H{"message": fmt.Sprintf("User %d Has Logged Out", UID)})
+	c.JSON(http.StatusOK, gin.H{"message": "Logged Out Successfully"})
 }
 
 func GetUserByID(uid int) (m.Users, error) {
 
 	var u m.Users
 
-	if err := s.DB.First(&u, uid).Error; err != nil {
+	if err := s.DB.Preload("Placement").First(&u, uid).Error; err != nil {
 		return u, errors.New("user not found")
 	}
 
@@ -108,27 +106,3 @@ func GetUserByID(uid int) (m.Users, error) {
 	return u, nil
 
 }
-
-// func RegisterUser(c *gin.Context) {
-// 	var user m.Users
-// 	if err := c.ShouldBindJSON(&user); err != nil {
-// 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-// 		c.Abort()
-// 		return
-// 	}
-
-// 	if err := user.HashingPassword(user.Password); err != nil {
-// 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-// 		c.Abort()
-// 		return
-// 	}
-
-// 	record := s.DB.Create(&user)
-
-// 	if record.Error != nil {
-// 		c.JSON(http.StatusInternalServerError, gin.H{"error": record.Error.Error()})
-// 		c.Abort()
-// 		return
-// 	}
-// 	c.JSON(http.StatusCreated, gin.H{"userId": user.IDUser, "username": user.Username})
-// }

@@ -5,6 +5,7 @@ import (
 	"log"
 	"net/http"
 	"strconv"
+	"strings"
 
 	m "nextlaundry_apis/models"
 	s "nextlaundry_apis/models/setup"
@@ -47,8 +48,35 @@ func Create(c *gin.Context) {
 		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"message": err.Error()})
 	}
 
-	s.DB.Create(&user)
-	c.JSON(http.StatusOK, gin.H{"user": user})
+	newUser := m.Users{
+		Fullname:  user.Fullname,
+		Username:  user.Username,
+		Role:      user.Role,
+		Id_outlet: user.Id_outlet,
+	}
+
+	hashed, err := user.HashingPassword(user.Password)
+	if err != nil {
+		log.Println(err)
+		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"message": err.Error()})
+		return
+	}
+
+	newUser.Password = hashed
+
+	errCreateUser := s.DB.Create(&newUser).Error
+	if errCreateUser != nil {
+		errCreateUser := strings.Split(errCreateUser.Error(), ":")[0]
+		log.Println(errCreateUser)
+		if errCreateUser == "Error 1062 (23000)" {
+			c.AbortWithStatusJSON(400, gin.H{"message": "Duplicate Entry For This Data"})
+			return
+		} else {
+			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
+			return
+		}
+	}
+	c.JSON(http.StatusOK, gin.H{"message": "Berhasil Menambahkan User Baru"})
 }
 
 func Update(c *gin.Context) {

@@ -14,7 +14,7 @@ import (
 func Index(c *gin.Context) {
 	var trans []t.Transactions
 
-	s.DB.Preload("Placement").Preload("OrderedBy").Preload("InputBy").Find(&trans)
+	s.DB.Preload("Placements").Preload("OrderedBy").Preload("InputBy").Find(&trans)
 	c.JSON(http.StatusOK, gin.H{"all_transactiondata": trans})
 }
 

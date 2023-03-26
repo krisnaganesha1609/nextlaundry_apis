@@ -26,15 +26,15 @@ func (u *Users) TableName() string {
 	return "tb_user"
 }
 
-func (u *Users) HashingPassword(password string) error {
+func (u *Users) HashingPassword(password string) (hashed string, err error) {
 	hashedByte, err := bcrypt.GenerateFromPassword([]byte(password), 14)
 	if err != nil {
-		return err
+		return "", err
 	}
 
-	u.Password = string(hashedByte)
+	hashedPassword := string(hashedByte)
 
-	return nil
+	return hashedPassword, nil
 }
 
 func (u *Users) CheckPasswordHash(providedPassword string) error {

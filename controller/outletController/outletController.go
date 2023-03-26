@@ -24,7 +24,7 @@ func Index(c *gin.Context) {
 }
 
 func Show(c *gin.Context) {
-	var outlet []m.Outlets
+	var outlet m.Outlets
 	id := c.Param("id")
 
 	if err := s.DB.First(&outlet, id).Error; err != nil {
@@ -42,10 +42,11 @@ func Show(c *gin.Context) {
 }
 
 func Create(c *gin.Context) {
-	var outlet []m.Outlets
+	var outlet m.Outlets
 
 	if err := c.ShouldBindJSON(&outlet); err != nil {
 		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"message": err.Error()})
+		return
 	}
 
 	s.DB.Create(&outlet)
@@ -53,7 +54,7 @@ func Create(c *gin.Context) {
 }
 
 func Update(c *gin.Context) {
-	var outlet []m.Outlets
+	var outlet m.Outlets
 	id := c.Param("id")
 
 	if err := c.ShouldBindJSON(&outlet); err != nil {
@@ -63,13 +64,14 @@ func Update(c *gin.Context) {
 
 	if s.DB.Model(&outlet).Where("id = ?", id).Updates(&outlet).RowsAffected == 0 {
 		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"message": "Tidak Dapat Melakukan Update outlet"})
+		return
 	}
 
 	c.JSON(http.StatusOK, gin.H{"message": "Data Berhasil Diperbarui"})
 }
 
 func Delete(c *gin.Context) {
-	var outlet []m.Outlets
+	var outlet m.Outlets
 
 	var input struct {
 		ID json.Number

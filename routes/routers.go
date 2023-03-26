@@ -17,11 +17,17 @@ import (
 
 func InitRouter() *gin.Engine {
 	router := gin.Default()
-	router.Use(cors.Default())
+	router.Use(cors.New(cors.Config{
+		AllowHeaders:     []string{"Origin", "Content-Type", "Accept", "Content-Length", "Accept-Language", "Accept-Encoding", "Connection", "Access-Control-Allow-Origin", "Authorization", "Access-Control-Allow-Headers", "Headers"},
+		AllowOrigins:     []string{"http://localhost:5173"},
+		AllowCredentials: true,
+		AllowMethods:     []string{"GET", "POST", "HEAD", "PUT", "DELETE", "PATCH", "OPTIONS"},
+	}))
 	public := router.Group("/api")
 	{
 		public.POST("/auth", a.AuthHandler)
 		nextlaundry := public.Group("/nextlaundry")
+		nextlaundry.GET("/validate", a.SecondValidate)
 		{
 			admin := nextlaundry.Group("/admin")
 			admin.Use(mw.Admin())

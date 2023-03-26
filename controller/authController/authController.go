@@ -80,6 +80,7 @@ func AuthHandler(c *gin.Context) {
 
 	user.PrepareGive()
 
+	s.DB.Exec("INSERT INTO log_history VALUES(NULL, CONCAT('New login activity by: ', ?), 'login', NOW(), NULL);", user.IDUser)
 	c.JSON(http.StatusOK, gin.H{"token": tokenString, "user": user, "message": "Logged In Successfully"})
 }
 

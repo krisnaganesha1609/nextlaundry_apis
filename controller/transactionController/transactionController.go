@@ -18,6 +18,24 @@ func Index(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"all_transactiondata": trans})
 }
 
+func GetByMonth(c *gin.Context) {
+	var trans []t.Transactions
+	var date t.Date
+
+	if err := c.ShouldBindJSON(&date); err != nil {
+		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"message": err.Error()})
+	}
+
+	s.DB.Preload("Placements").Preload("OrderedBy").Preload("InputBy").Where(
+		"tgl BETWEEN ? AND ?", date.StartDate, date.EndDate,
+	).Find(&trans)
+
+	c.JSON(http.StatusOK, gin.H{
+		"label": "member",
+		"data":  trans,
+	})
+}
+
 func Show(c *gin.Context) {
 	var trans t.Transactions
 	id := c.Param("id")

@@ -56,6 +56,7 @@ func InitRouter() *gin.Engine {
 
 				//Member Resource Data
 				admin.GET("/members", member.Index)
+				admin.POST("/members-by-month", member.GetByMonth)
 				admin.GET("/members/:id", member.Show)
 				admin.POST("/member", member.Create)
 				admin.PUT("/member/:id", member.Update)

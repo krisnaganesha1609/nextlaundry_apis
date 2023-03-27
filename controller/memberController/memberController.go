@@ -21,6 +21,24 @@ func Index(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"members": members})
 }
 
+func GetByMonth(c *gin.Context) {
+	var members []m.Members
+	var date m.Date
+
+	if err := c.ShouldBindJSON(&date); err != nil {
+		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"message": err.Error()})
+	}
+
+	s.DB.Where(
+		"created_at BETWEEN ? AND ?", date.StartDate, date.EndDate,
+	).Find(&members)
+
+	c.JSON(http.StatusOK, gin.H{
+		"label": "member",
+		"data":  members,
+	})
+}
+
 func Show(c *gin.Context) {
 	var member m.Members
 	id := c.Param("id")

@@ -54,6 +54,16 @@ func Show(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"detailed_transaction": trans})
 }
 
+func ShowByUser(c *gin.Context) {
+	var trans []t.Transactions
+	id := c.Param("id")
+
+	s.DB.Preload("Placements").Preload("OrderedBy").Preload("InputBy").Where("id_user=? AND dibayar !=?", id, "dibayar").Find(&trans)
+
+	c.JSON(http.StatusOK, gin.H{"all_transactiondata": trans})
+
+}
+
 func Create(c *gin.Context) {
 	var trans t.Transactions
 

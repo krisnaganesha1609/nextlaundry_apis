@@ -76,6 +76,7 @@ func InitRouter() *gin.Engine {
 				//Transaction Resource Data
 				admin.GET("/transactions", trans.Index)
 				admin.POST("/transactions-by-month", trans.GetByMonth)
+				admin.GET("/transactions-by-user/:id", trans.ShowByUser)
 				admin.GET("/transactions/:id", trans.Show)
 				admin.POST("/transaction", trans.Create)
 				admin.PUT("transaction/:id", trans.Update)

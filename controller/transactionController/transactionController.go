@@ -72,7 +72,7 @@ func Create(c *gin.Context) {
 	}
 
 	s.DB.Create(&trans)
-	c.JSON(http.StatusOK, gin.H{"user": trans})
+	c.JSON(http.StatusOK, gin.H{"message": "Entri Transaksi Berhasil", "id_transaksi": trans.IDTransaction})
 }
 
 func Update(c *gin.Context) {

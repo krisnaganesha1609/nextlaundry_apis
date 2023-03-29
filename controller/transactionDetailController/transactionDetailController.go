@@ -19,7 +19,7 @@ func Index(c *gin.Context) {
 }
 
 func Show(c *gin.Context) {
-	var transdet []t.TransactionDetails
+	var transdet t.TransactionDetails
 	id := c.Param("id")
 
 	if err := s.DB.Preload("TransactionInfo").Preload("Packages").First(&transdet, id).Error; err != nil {
@@ -37,14 +37,14 @@ func Show(c *gin.Context) {
 }
 
 func Create(c *gin.Context) {
-	var transdet t.TransactionDetails
+	var transdet []t.TransactionDetails
 
 	if err := c.ShouldBindJSON(&transdet); err != nil {
 		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"message": err.Error()})
 	}
 
 	s.DB.Create(&transdet)
-	c.JSON(http.StatusOK, gin.H{"user": transdet})
+	c.JSON(http.StatusOK, gin.H{"message": "Menambah Detail Berhasil"})
 }
 
 func Update(c *gin.Context) {

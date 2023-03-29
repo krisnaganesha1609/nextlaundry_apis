@@ -2,6 +2,7 @@ package transactionDetailController
 
 import (
 	"encoding/json"
+	"log"
 	"net/http"
 
 	t "nextlaundry_apis/models"
@@ -36,14 +37,50 @@ func Show(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"detailed_transactiondetails": transdet})
 }
 
+func ShowAll(c *gin.Context) {
+	var transdet []t.GetTProduct
+	var TransactionProduct t.TransactionProduct
+
+	s.DB.Model(&TransactionProduct).Preload("TransactionInfo").Preload("TransactionInfo.Placements").Preload("ProductInfo.Outlet").Preload("ProductInfo").Find(&transdet)
+	c.JSON(http.StatusOK, gin.H{
+		"data": transdet,
+	})
+}
+
+func ShowAllById(c *gin.Context) {
+	var transdet []t.GetTProduct
+	var TransactionProduct t.TransactionProduct
+	id := c.Param("id")
+
+	s.DB.Model(&TransactionProduct).Preload("TransactionInfo").Preload("TransactionInfo.Placements").Preload("ProductInfo.Outlet").Preload("ProductInfo").Where(
+		"id_transaksi = ?", id,
+	).Find(&transdet)
+	c.JSON(http.StatusOK, gin.H{
+		"data": transdet,
+	})
+}
+
 func Create(c *gin.Context) {
-	var transdet []t.TransactionDetails
+	var transdet t.TransactionDetailsRequest
 
 	if err := c.ShouldBindJSON(&transdet); err != nil {
+		log.Println("masuk error create transdet", &transdet)
 		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"message": err.Error()})
+		return
 	}
 
-	s.DB.Create(&transdet)
+	newTransdet := t.TransactionDetails{
+		Id_transaksi: transdet.Id_transaksi,
+	}
+
+	newTransProduct := t.TransactionProduct{
+		Id_transaksi: transdet.Id_transaksi,
+		Id_product:   transdet.Id_product,
+		Qty:          transdet.Qty,
+	}
+
+	s.DB.Create(&newTransdet)
+	s.DB.Create(&newTransProduct)
 	c.JSON(http.StatusOK, gin.H{"message": "Menambah Detail Berhasil"})
 }
 

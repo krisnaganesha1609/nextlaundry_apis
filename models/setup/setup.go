@@ -47,6 +47,9 @@ func Migrations() {
 	if err7 := DB.AutoMigrate(&m.LogHistory{}); err7 != nil {
 		log.Println(err7.Error())
 	}
+	if err8 := DB.AutoMigrate(&m.TransactionProduct{}); err8 != nil {
+		log.Println(err8.Error())
+	}
 	UsersTriggers()
 	OutletTriggers()
 	MemberTriggers()

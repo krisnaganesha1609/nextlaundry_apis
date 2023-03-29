@@ -85,11 +85,13 @@ func InitRouter() *gin.Engine {
 				//Transaction Detail Resource Data
 				admin.GET("/details", transdetail.Index)
 				admin.GET("/details/:id", transdetail.Show)
+				admin.GET("/detailz/", transdetail.ShowAll)
+				admin.GET("/detailz/:id", transdetail.ShowAllById)
 				admin.POST("/detail", transdetail.Create)
 				admin.PUT("detail/:id", transdetail.Update)
 				admin.DELETE("/detail", transdetail.Delete)
 
-				admin.GET("/transaction-report", h.ExportViewToExcel)
+				// admin.GET("/transaction-report", h.ExportViewToExcel)
 
 				//Log History READ DATA
 				admin.GET("/logs", h.GetLogData)
@@ -125,7 +127,7 @@ func InitRouter() *gin.Engine {
 				cashier.PUT("detail/:id", transdetail.Update)
 				cashier.DELETE("/detail", transdetail.Delete)
 
-				cashier.GET("/transaction-report", h.ExportViewToExcel)
+				// cashier.GET("/transaction-report", h.ExportViewToExcel)
 
 			}
 			owner := nextlaundry.Group("/owner")
@@ -136,7 +138,7 @@ func InitRouter() *gin.Engine {
 				//Dashboard GET DATA
 
 				//Transaction GET DATA (EXPORT TO EXCEL & PDF)
-				owner.GET("/transaction-report", h.ExportViewToExcel)
+				// owner.GET("/transaction-report", h.ExportViewToExcel)
 			}
 		}
 

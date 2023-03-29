@@ -52,7 +52,7 @@ func ShowAllById(c *gin.Context) {
 	var TransactionProduct t.TransactionProduct
 	id := c.Param("id")
 
-	s.DB.Model(&TransactionProduct).Preload("TransactionInfo").Preload("TransactionInfo.Placements").Preload("ProductInfo.Outlet").Preload("ProductInfo").Where(
+	s.DB.Model(&TransactionProduct).Preload("TransactionInfo").Preload("TransactionInfo.Placements").Preload("TransactionInfo.OrderedBy").Preload("ProductInfo.Outlet").Preload("ProductInfo").Where(
 		"id_transaksi = ?", id,
 	).Find(&transdet)
 	c.JSON(http.StatusOK, gin.H{
